@@ -2,7 +2,7 @@ from typing import Callable, List, Tuple
 
 import pytest
 from hypothesis import given
-from hypothesis.strategies import lists
+from hypothesis.strategies import floats, lists
 
 from minitorch import MathTest
 from minitorch.operators import (
@@ -107,45 +107,52 @@ def test_sigmoid(a: float) -> None:
     * It crosses 0 at 0.5
     * It is  strictly increasing.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+
+    assert sigmoid(a) <= 1.0
+    assert sigmoid(a) >= 0
+    assert_close((1 - sigmoid(a)), sigmoid(neg(a)))
+    assert sigmoid(a) <= sigmoid(a + 1)
 
 
 @pytest.mark.task0_2
-@given(small_floats, small_floats, small_floats)
+@given(floats(min_value=1), floats(min_value=1), floats(min_value=1))
 def test_transitive(a: float, b: float, c: float) -> None:
     "Test the transitive property of less-than (a < b and b < c implies a < c)"
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+
+    if lt(a, b) == 1.0 and lt(b, c) == 1.0:
+        assert lt(a, c) == 1.0
 
 
 @pytest.mark.task0_2
-def test_symmetric() -> None:
+@given(small_floats, small_floats)
+def test_symmetric(a: float, b: float) -> None:
     """
     Write a test that ensures that :func:`minitorch.operators.mul` is symmetric, i.e.
     gives the same value regardless of the order of its input.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    assert mul(a, b) == mul(b, a)
 
 
 @pytest.mark.task0_2
-def test_distribute() -> None:
+@given(small_floats, small_floats, small_floats)
+def test_distribute(x: float, y: float, z: float) -> None:
     r"""
     Write a test that ensures that your operators distribute, i.e.
     :math:`z \times (x + y) = z \times x + z \times y`
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    assert_close(mul(z, add(x, y)), add(mul(z, x), mul(z, y)))
 
 
 @pytest.mark.task0_2
-def test_other() -> None:
+@given(small_floats, small_floats, small_floats)
+def test_other(a: float, b: float, c: float) -> None:
     """
     Write a test that ensures some other property holds for your functions.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    # associativity
+
+    assert_close(add(add(a, b), c), add(a, add(b, c)))
+    assert_close(mul(mul(a, b), c), mul(a, mul(b, c)))
 
 
 # ## Task 0.3  - Higher-order functions
